@@ -4,12 +4,23 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class GameBoard {
-    int rows;
-    int columns;
-    boolean values[][];
+    private int rows;
+    private int columns;
+    private boolean values[][];
 
     public GameBoard(String fileName) throws IOException {
         loadStartState(fileName);
+    }
+
+    public GameBoard(GameBoard other) {
+        this.rows = other.rows;
+        this.columns = other.columns;
+        this.values = new boolean[rows][columns];
+        for (int i = 0; i < rows; ++i) {
+            for (int j = 0; j < columns; ++j) {
+                this.values[i][j] = other.values[i][j];
+            }
+        }
     }
 
     private void loadStartState(String fileName) throws IOException {
@@ -25,7 +36,8 @@ public class GameBoard {
             for (int i = 0; i < rows; i++) {
                 line = bufferedReader.readLine();
                 for (int j = 0; j < columns; j++) {
-                    values[i][j] = (line.charAt(j) != '.');
+                    boolean isAlive = line.charAt(j) != '.';
+                    setValue(i, j, isAlive);
                 }
             }
         } finally {
@@ -41,6 +53,14 @@ public class GameBoard {
 
     public void setValue(int x, int y, boolean isAlive) {
         values[x][y] = isAlive;
+    }
+
+    public int getRows() {
+        return rows;
+    }
+
+    public int getColumns() {
+        return columns;
     }
 
     public boolean[] getNeighbourValues(int i, int j) {
@@ -67,5 +87,20 @@ public class GameBoard {
 
     private boolean areValid(int i, int j) {
         return i >= 0 && j >= 0 && i < rows && j < columns;
+    }
+
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
+                if (getValue(i, j)) {
+                    builder.append("*");
+                } else {
+                    builder.append(".");
+                }
+            }
+            builder.append("\n");
+        }
+        return builder.toString();
     }
 }
