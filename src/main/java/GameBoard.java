@@ -2,57 +2,31 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.BitSet;
 
 public class GameBoard {
     private int rows;
     private int columns;
-    private boolean values[][];
+    private BitSet values;
 
-    public GameBoard(String fileName) throws IOException {
-        loadStartState(fileName);
+    public GameBoard(int rows, int columns) throws IOException {
+        this.rows = rows;
+        this.columns = columns;
+        this.values = new BitSet(rows * columns);
     }
 
     public GameBoard(GameBoard other) {
         this.rows = other.rows;
         this.columns = other.columns;
-        this.values = new boolean[rows][columns];
-        for (int i = 0; i < rows; ++i) {
-            for (int j = 0; j < columns; ++j) {
-                this.values[i][j] = other.values[i][j];
-            }
-        }
-    }
-
-    private void loadStartState(String fileName) throws IOException {
-        BufferedReader bufferedReader = null;
-        try {
-            bufferedReader = new BufferedReader(new FileReader(fileName));
-            String line = bufferedReader.readLine();
-            String[] parts = line.split(" ");
-            rows = Integer.parseInt(parts[0]);
-            columns = Integer.parseInt(parts[1]);
-            values = new boolean[rows][columns];
-
-            for (int i = 0; i < rows; i++) {
-                line = bufferedReader.readLine();
-                for (int j = 0; j < columns; j++) {
-                    boolean isAlive = line.charAt(j) != '.';
-                    setValue(i, j, isAlive);
-                }
-            }
-        } finally {
-            if (bufferedReader != null) {
-                bufferedReader.close();
-            }
-        }
+        this.values = (BitSet)other.values.clone();
     }
 
     public boolean getValue(int x, int y) {
-        return values[x][y];
+        return values.get(columns * x + y);
     }
 
     public void setValue(int x, int y, boolean isAlive) {
-        values[x][y] = isAlive;
+        values.set(columns * x + y, isAlive);
     }
 
     public int getRows() {
